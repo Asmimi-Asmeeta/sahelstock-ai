@@ -1,0 +1,11 @@
+sku,name,category,cost_price,sell_price,current_stock,min_stock,supplier
+RIZ25KG,Riz local 25 kg,Epicerie,10800,13500,18,12,Cooperative Niamey
+HUILE5L,Huile vegetale 5 L,Epicerie,5200,6800,9,10,Huilerie du Sahel
+SUCRE1KG,Sucre 1 kg,Epicerie,520,700,35,20,Import Niger
+LAIT400,Lait en poudre 400 g,Epicerie,1800,2400,14,10,Distributeur Maradi
+SAVON250,Savon menage 250 g,Hygiene,180,300,22,15,Usine Sahel Proprete
+BOISSON33,Boisson gazeuse 33 cl,Boisson,210,350,28,18,Boissons Niger
+THEVERT,The vert 100 sachets,Epicerie,950,1400,11,8,Fournisseur Grand Marche
+PILEAA,Lot piles AA x4,Divers,700,1200,7,8,Electro Sahel
+SEMOULE5KG,Semoule 5 kg,Epicerie,2400,3200,16,10,Minoterie locale
+EAU12,Eau minerale pack 12,Boisson,1300,1900,20,12,Source Ader
