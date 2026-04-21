@@ -21,7 +21,7 @@ type ChartsPanelProps = {
   analysis: DashboardAnalysis;
 };
 
-const riskColors = ["#94a3b8", "#f59e0b", "#0f172a"];
+const riskColors = ["#10b981", "#f59e0b", "#b91c1c"];
 
 function tooltipNumber(value: unknown) {
   return formatNumber(typeof value === "number" ? value : Number(value ?? 0));
@@ -46,7 +46,11 @@ export function ChartsPanel({ analysis }: ChartsPanelProps) {
             <BarChart data={analysis.monthlySales}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="label" tickLine={false} axisLine={false} />
-              <YAxis tickFormatter={(value) => formatNumber(Number(value))} tickLine={false} axisLine={false} />
+              <YAxis
+                tickFormatter={(value) => formatNumber(Number(value))}
+                tickLine={false}
+                axisLine={false}
+              />
               <Tooltip formatter={(value) => tooltipCurrency(value)} />
               <Bar dataKey="value" fill="#2563eb" radius={[10, 10, 0, 0]} />
             </BarChart>

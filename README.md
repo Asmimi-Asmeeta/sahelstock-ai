@@ -10,14 +10,15 @@ L'application vise un usage sobre, rapide à prendre en main et facile à démon
 ## Fonctionnalités présentes
 
 - import de fichiers `CSV`, `XLSX` et `XLS`
-- validation des colonnes attendues
+- validation des colonnes attendues et contrôles métier supplémentaires
 - stockage local des données importées via `localStorage`
 - tableau de bord avec KPI métier
 - graphiques de ventes et de stock
 - niveaux d'alerte sur le stock
 - prévision simple du mois suivant par produit
 - suggestions de réassort
-- export CSV des recommandations
+- export CSV brut des recommandations
+- export HTML visuel avec KPI, graphiques et tableaux
 - résumé intelligent en français
 - fallback déterministe si `OPENAI_API_KEY` n'est pas configurée
 
@@ -158,7 +159,7 @@ Comportement :
 3. Vérifier les éventuels messages d'erreur d'import
 4. Ouvrir le tableau de bord
 5. Consulter les KPI, graphiques, alertes et recommandations
-6. Exporter le fichier CSV de réassort si besoin
+6. Exporter le CSV brut ou le rapport HTML selon le besoin
 
 ## Build de production
 

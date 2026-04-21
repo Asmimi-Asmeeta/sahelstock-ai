@@ -5,8 +5,9 @@ import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 
 import { buildSummaryPayload, analyzeBusinessData } from "@/lib/analytics";
 import { buildFallbackSummary } from "@/lib/summary";
-import { clearDataset, loadDataset } from "@/lib/storage";
-import type { SummaryResponse } from "@/lib/types";
+import { clearDataset, consumeImportNotice, loadDataset } from "@/lib/storage";
+import type { ImportNotice, SummaryResponse } from "@/lib/types";
+import { Badge } from "@/components/ui/badge";
 import {
   formatCurrencyCompact,
   formatDateTime,
@@ -26,6 +27,9 @@ export function DashboardView() {
   const [serverSummary, setServerSummary] = useState<string | null>(null);
   const [summaryMode, setSummaryMode] = useState<"openai" | "fallback">("fallback");
   const [resetMessage, setResetMessage] = useState("");
+  const [importNotice] = useState<ImportNotice | null>(() =>
+    typeof window === "undefined" ? null : consumeImportNotice(),
+  );
 
   const dataset = useMemo(() => {
     if (!isClient) {
@@ -118,9 +122,7 @@ export function DashboardView() {
     return (
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-12 sm:px-6 lg:px-8">
         <section className="panel-card p-8 text-center">
-          <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600">
-            Tableau de bord vide
-          </span>
+          <Badge tone="slate">Tableau de bord vide</Badge>
           <h1 className="mt-4 text-3xl font-bold tracking-tight text-slate-950">
             Aucune donnée n&apos;a encore été importée.
           </h1>
@@ -147,23 +149,22 @@ export function DashboardView() {
     );
   }
 
+  const sourceLabel =
+    dataset.source === "demo" ? "Démo intégrée" : "Fichiers importés";
+
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-8 sm:px-6 lg:px-8">
       <RevealOnScroll>
         <section className="panel-card bg-gradient-to-br from-white to-slate-50 p-6 sm:p-8">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
-                Tableau de bord
-              </span>
+              <Badge tone="emerald">Tableau de bord</Badge>
               <h1 className="mt-4 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
                 Décisions rapides pour votre stock et vos ventes.
               </h1>
               <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600 sm:text-base">
                 Source :{" "}
-                <span className="font-medium text-slate-800">
-                  {dataset.source === "demo" ? "Démo intégrée" : "Fichiers importés"}
-                </span>
+                <span className="font-medium text-slate-800">{sourceLabel}</span>
                 {" · "}
                 Mise à jour :{" "}
                 <span className="font-medium text-slate-800">
@@ -187,64 +188,87 @@ export function DashboardView() {
               </button>
             </div>
           </div>
+
           {resetMessage ? (
             <p className="mt-4 text-sm font-medium text-emerald-700">{resetMessage}</p>
+          ) : null}
+
+          {importNotice ? (
+            <div
+              className={`mt-4 rounded-xl border p-4 text-sm ${
+                importNotice.kind === "warning"
+                  ? "border-amber-200 bg-amber-50 text-amber-900"
+                  : "border-emerald-200 bg-emerald-50 text-emerald-800"
+              }`}
+            >
+              <p className="font-semibold">{importNotice.message}</p>
+              {importNotice.details.length > 0 ? (
+                <ul className="mt-2 list-disc space-y-1 pl-5">
+                  {importNotice.details.map((detail) => (
+                    <li key={detail}>{detail}</li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
           ) : null}
         </section>
       </RevealOnScroll>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-          {[
-            {
-              label: "Produits suivis",
-              value: formatNumber(analysis.kpis.totalProducts),
-              helper: "Nombre total de références importées.",
-              accent: false,
-            },
-            {
-              label: "Stock total",
-              value: formatNumber(analysis.kpis.totalStock),
-              helper: "Somme des quantités disponibles, toutes unités confondues.",
-              accent: false,
-            },
-            {
-              label: "Chiffre d'affaires",
-              value: formatCurrencyCompact(analysis.kpis.totalRevenue),
-              helper: "Total des revenus observés sur la période.",
-              accent: true,
-            },
-            {
-              label: "Marge estimée",
-              value: formatCurrencyCompact(analysis.kpis.estimatedMargin),
-              helper: "Estimation basée sur le prix de vente, le coût et les ventes.",
-              accent: false,
-            },
-            {
-              label: "Produits à surveiller",
-              value: formatNumber(analysis.kpis.productsAtRisk),
-              helper: "Références avec un niveau à surveiller ou une rupture probable.",
-              accent: analysis.kpis.productsAtRisk > 0,
-            },
-          ].map((item, index) => (
-            <RevealOnScroll key={item.label} delay={index * 70}>
-              <KpiCard
-                label={item.label}
-                value={item.value}
-                helper={item.helper}
-                accent={item.accent}
-              />
-            </RevealOnScroll>
-          ))}
+        {[
+          {
+            label: "Produits suivis",
+            value: formatNumber(analysis.kpis.totalProducts),
+            helper: "Nombre total de références importées.",
+            accent: false,
+          },
+          {
+            label: "Stock total",
+            value: formatNumber(analysis.kpis.totalStock),
+            helper: "Somme des quantités disponibles, toutes unités confondues.",
+            accent: false,
+          },
+          {
+            label: "Chiffre d'affaires",
+            value: formatCurrencyCompact(analysis.kpis.totalRevenue),
+            helper: "Total des revenus observés sur la période.",
+            accent: true,
+          },
+          {
+            label: "Marge estimée",
+            value: formatCurrencyCompact(analysis.kpis.estimatedMargin),
+            helper: "Estimation basée sur le prix de vente, le coût et les ventes.",
+            accent: false,
+          },
+          {
+            label: "Produits à surveiller",
+            value: formatNumber(analysis.kpis.productsAtRisk),
+            helper: "Références avec un niveau à surveiller ou un risque élevé.",
+            accent: analysis.kpis.productsAtRisk > 0,
+          },
+        ].map((item, index) => (
+          <RevealOnScroll key={item.label} delay={index * 70}>
+            <KpiCard
+              label={item.label}
+              value={item.value}
+              helper={item.helper}
+              accent={item.accent}
+            />
+          </RevealOnScroll>
+        ))}
       </section>
 
       <RevealOnScroll>
         <ChartsPanel analysis={analysis} />
       </RevealOnScroll>
+
       <RevealOnScroll delay={100}>
         <InsightsPanel
           analysis={analysis}
           summary={summary}
           summaryMode={summaryMode}
+          sourceLabel={sourceLabel}
+          importedAt={dataset.importedAt}
         />
       </RevealOnScroll>
     </div>

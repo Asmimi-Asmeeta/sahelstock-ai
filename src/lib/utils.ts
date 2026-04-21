@@ -45,7 +45,7 @@ export function formatDateTime(value: string) {
 
 export function humanizeRiskLevel(level: string) {
   if (level === "eleve") {
-    return "Rupture probable";
+    return "Risque élevé";
   }
 
   if (level === "moyen") {
@@ -116,14 +116,27 @@ export function normalizeText(value: unknown) {
   return String(value ?? "").trim();
 }
 
-export function downloadTextFile(filename: string, content: string) {
-  const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
+export function downloadFile(
+  filename: string,
+  content: Blob | string,
+  mimeType = "text/plain;charset=utf-8;",
+) {
+  const blob =
+    content instanceof Blob ? content : new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
   link.download = filename;
   link.click();
   URL.revokeObjectURL(url);
+}
+
+export function downloadTextFile(
+  filename: string,
+  content: string,
+  mimeType = "text/csv;charset=utf-8;",
+) {
+  downloadFile(filename, content, mimeType);
 }
 
 export function createCsv(rows: string[][]) {

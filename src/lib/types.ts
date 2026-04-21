@@ -24,6 +24,12 @@ export type StoredDataset = {
   importedAt: string;
 };
 
+export type ImportNotice = {
+  kind: "success" | "warning";
+  message: string;
+  details: string[];
+};
+
 export type RiskLevel = "faible" | "moyen" | "eleve";
 
 export type ProductPerformance = {

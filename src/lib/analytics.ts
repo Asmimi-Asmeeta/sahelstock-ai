@@ -160,7 +160,7 @@ function riskDistribution(rows: ProductPerformance[]): ChartPoint[] {
   return [
     { label: "Stock correct", value: counts.faible },
     { label: "À surveiller", value: counts.moyen },
-    { label: "Rupture probable", value: counts.eleve },
+    { label: "Risque élevé", value: counts.eleve },
   ];
 }
 

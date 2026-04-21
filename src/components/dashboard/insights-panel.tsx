@@ -1,9 +1,9 @@
 "use client";
 
 import type { DashboardAnalysis } from "@/lib/types";
+import { downloadDashboardReport, downloadRecommendationsCsv } from "@/lib/reports";
+import { Badge, type BadgeTone } from "@/components/ui/badge";
 import {
-  createCsv,
-  downloadTextFile,
   formatCurrency,
   formatQuantityWithUnit,
   humanizeRiskLevel,
@@ -13,50 +13,47 @@ type InsightsPanelProps = {
   analysis: DashboardAnalysis;
   summary: string;
   summaryMode: "openai" | "fallback";
+  sourceLabel: string;
+  importedAt: string;
 };
 
-function riskBadge(level: string) {
+function riskBadge(level: string): BadgeTone {
   if (level === "eleve") {
-    return "border border-slate-300 bg-slate-900 text-white";
+    return "red";
   }
 
   if (level === "moyen") {
-    return "border border-amber-200 bg-amber-50 text-amber-800";
+    return "amber";
   }
 
-  return "border border-slate-200 bg-slate-50 text-slate-700";
+  return "emerald";
 }
 
 export function InsightsPanel({
   analysis,
   summary,
   summaryMode,
+  sourceLabel,
+  importedAt,
 }: InsightsPanelProps) {
   const exportRecommendations = () => {
-    const rows = [
-      ["sku", "produit", "risque", "stock_actuel", "stock_minimum", "prevision_mois_suivant", "quantite_recommandee", "fournisseur"],
-      ...analysis.reorderSuggestions.map((item) => [
-        item.sku,
-        item.name,
-        humanizeRiskLevel(item.riskLevel),
-        String(item.currentStock),
-        String(item.minStock),
-        String(item.forecastUnits),
-        String(item.reorderQuantity),
-        item.supplier,
-      ]),
-    ];
+    downloadRecommendationsCsv(analysis);
+  };
 
-    downloadTextFile(
-      "sahelstock-recommandations.csv",
-      createCsv(rows),
-    );
+  const exportVisualReport = () => {
+    downloadDashboardReport({
+      analysis,
+      summary,
+      summaryMode,
+      sourceLabel,
+      importedAt,
+    });
   };
 
   return (
     <div className="grid gap-6 xl:grid-cols-[1.3fr_0.9fr]">
       <section className="panel-card p-5">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h3 className="text-lg font-semibold text-slate-950">
               Résumé intelligent en français
@@ -67,18 +64,32 @@ export function InsightsPanel({
                 : "Résumé déterministe utilisé en mode fallback."}
             </p>
           </div>
-          <button
-            type="button"
-            onClick={exportRecommendations}
-            className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
-          >
-            Export CSV
-          </button>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <button
+              type="button"
+              onClick={exportRecommendations}
+              className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+            >
+              CSV brut
+            </button>
+            <button
+              type="button"
+              onClick={exportVisualReport}
+              className="rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
+            >
+              Rapport HTML
+            </button>
+          </div>
         </div>
 
         <div className="mt-5 rounded-xl bg-slate-50 p-4 text-sm leading-7 text-slate-700">
           {summary}
         </div>
+
+        <p className="mt-3 text-xs leading-6 text-slate-500">
+          Le CSV sert aux données brutes de réapprovisionnement. Le rapport HTML
+          génère un livrable plus propre avec KPI, graphiques et tableaux.
+        </p>
 
         <div className="mt-6 grid gap-4 md:grid-cols-3">
           <article className="panel-card p-4">
@@ -101,11 +112,9 @@ export function InsightsPanel({
               {analysis.riskProducts.slice(0, 5).map((item) => (
                 <li key={item.sku} className="flex items-center justify-between gap-3">
                   <span>{item.name}</span>
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-semibold ${riskBadge(item.riskLevel)}`}
-                  >
+                  <Badge tone={riskBadge(item.riskLevel)}>
                     {humanizeRiskLevel(item.riskLevel)}
-                  </span>
+                  </Badge>
                 </li>
               ))}
             </ul>
@@ -140,14 +149,11 @@ export function InsightsPanel({
         <div className="space-y-3">
           {analysis.reorderSuggestions.length === 0 ? (
             <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
-              Aucun réassort prioritaire n&apos;est nécessaire pour le moment.
+              Aucun réapprovisionnement prioritaire n&apos;est nécessaire pour le moment.
             </div>
           ) : (
             analysis.reorderSuggestions.map((item) => (
-              <article
-                key={item.sku}
-                className="panel-card p-4"
-              >
+              <article key={item.sku} className="panel-card p-4">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <h4 className="font-semibold text-slate-900">{item.name}</h4>
@@ -155,11 +161,9 @@ export function InsightsPanel({
                       SKU {item.sku} · Fournisseur {item.supplier}
                     </p>
                   </div>
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-semibold ${riskBadge(item.riskLevel)}`}
-                  >
+                  <Badge tone={riskBadge(item.riskLevel)} className="max-w-[10.5rem]">
                     {humanizeRiskLevel(item.riskLevel)}
-                  </span>
+                  </Badge>
                 </div>
                 <div className="mt-4 grid grid-cols-3 gap-3 text-sm">
                   <div className="rounded-lg bg-slate-50 p-3">

@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { Badge } from "@/components/ui/badge";
 import { RevealOnScroll } from "@/components/ui/reveal-on-scroll";
 import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
 
@@ -8,61 +9,59 @@ export default function Home() {
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-16 px-4 py-8 sm:px-6 lg:px-8">
       <RevealOnScroll>
         <section className="panel-card-soft bg-gradient-to-br from-slate-950 via-blue-900 to-slate-900 px-6 py-10 text-white shadow-xl sm:px-10 sm:py-14">
-        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
-          <div>
-            <span className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-blue-100">
-              Gestion de stock simple
-            </span>
-            <h1 className="mt-5 text-4xl font-bold tracking-tight sm:text-5xl">
-              {APP_NAME}
-            </h1>
-            <p className="mt-4 max-w-2xl text-lg leading-8 text-slate-200">
-              {APP_TAGLINE}
-            </p>
-            <p className="mt-6 max-w-2xl text-base leading-7 text-slate-300">
-              Conçu pour les petits marchands du Niger qui vendent via WhatsApp,
-              Facebook ou petite boutique, et qui veulent passer d&apos;un suivi
-              manuel à un pilotage simple, clair et démontrable.
-            </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href="/upload"
-                className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100"
-              >
-                Importer mes fichiers
-              </Link>
-              <Link
-                href="/upload"
-                className="rounded-full border border-white/20 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
-              >
-                Charger une démo
-              </Link>
-            </div>
-          </div>
-
-          <div className="panel-card-dark p-6 backdrop-blur">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-100">
-              Ce que montre l&apos;application
-            </p>
-            <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              {[
-                "Import CSV et Excel",
-                "Tableau de bord mobile-first",
-                "Alertes de stock",
-                "Prévision légère des ventes",
-                "Résumé intelligent en français",
-                "Export CSV des recommandations",
-              ].map((item) => (
-                <div
-                  key={item}
-                  className="panel-card-dark p-4 text-sm text-slate-100"
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+            <div>
+              <Badge tone="hero">Gestion de stock simple</Badge>
+              <h1 className="mt-5 text-4xl font-bold tracking-tight sm:text-5xl">
+                {APP_NAME}
+              </h1>
+              <p className="mt-4 max-w-2xl text-lg leading-8 text-slate-200">
+                {APP_TAGLINE}
+              </p>
+              <p className="mt-6 max-w-2xl text-base leading-7 text-slate-300">
+                Conçu pour les petits marchands du Niger qui vendent via WhatsApp,
+                Facebook ou petite boutique, et qui veulent passer d&apos;un suivi
+                manuel à un pilotage simple, clair et démontrable.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link
+                  href="/upload"
+                  className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100"
                 >
-                  {item}
-                </div>
-              ))}
+                  Importer mes fichiers
+                </Link>
+                <Link
+                  href="/upload"
+                  className="rounded-full border border-white/20 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                >
+                  Charger une démo
+                </Link>
+              </div>
+            </div>
+
+            <div className="panel-card-dark p-6 backdrop-blur">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-100">
+                Ce que montre l&apos;application
+              </p>
+              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                {[
+                  "Import CSV et Excel",
+                  "Tableau de bord mobile-first",
+                  "Alertes de stock",
+                  "Prévision légère des ventes",
+                  "Résumé intelligent en français",
+                  "Rapport HTML et CSV",
+                ].map((item) => (
+                  <div
+                    key={item}
+                    className="panel-card-dark p-4 text-sm text-slate-100"
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
         </section>
       </RevealOnScroll>
 
@@ -108,7 +107,7 @@ export default function Home() {
                 <li>KPI sur le stock, le chiffre d&apos;affaires, la marge et les priorités.</li>
                 <li>Graphiques Recharts pour une lecture rapide des résultats.</li>
                 <li>Prévision simple du mois suivant par SKU.</li>
-                <li>Suggestions de réapprovisionnement exportables en CSV.</li>
+                <li>Suggestions de réapprovisionnement exportables en CSV et rapport HTML.</li>
               </ul>
             </article>
           </RevealOnScroll>
