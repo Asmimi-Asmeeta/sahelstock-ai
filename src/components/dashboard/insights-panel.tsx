@@ -49,7 +49,7 @@ export function InsightsPanel({
 
   return (
     <div className="grid gap-6 xl:grid-cols-[1.3fr_0.9fr]">
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="panel-card p-5">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h3 className="text-lg font-semibold text-slate-950">
@@ -70,12 +70,12 @@ export function InsightsPanel({
           </button>
         </div>
 
-        <div className="mt-5 rounded-2xl bg-slate-50 p-4 text-sm leading-7 text-slate-700">
+        <div className="mt-5 rounded-xl bg-slate-50 p-4 text-sm leading-7 text-slate-700">
           {summary}
         </div>
 
         <div className="mt-6 grid gap-4 md:grid-cols-3">
-          <article className="rounded-2xl border border-slate-200 p-4">
+          <article className="panel-card p-4">
             <h4 className="font-semibold text-slate-900">Top 5 ventes</h4>
             <ul className="mt-3 space-y-3 text-sm text-slate-600">
               {analysis.topSellers.map((item) => (
@@ -89,7 +89,7 @@ export function InsightsPanel({
             </ul>
           </article>
 
-          <article className="rounded-2xl border border-slate-200 p-4">
+          <article className="panel-card p-4">
             <h4 className="font-semibold text-slate-900">Produits à surveiller</h4>
             <ul className="mt-3 space-y-3 text-sm text-slate-600">
               {analysis.riskProducts.slice(0, 5).map((item) => (
@@ -105,7 +105,7 @@ export function InsightsPanel({
             </ul>
           </article>
 
-          <article className="rounded-2xl border border-slate-200 p-4">
+          <article className="panel-card p-4">
             <h4 className="font-semibold text-slate-900">Opportunités de marge</h4>
             <ul className="mt-3 space-y-3 text-sm text-slate-600">
               {analysis.marginOpportunities.map((item) => (
@@ -121,7 +121,7 @@ export function InsightsPanel({
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="panel-card p-5">
         <div className="mb-4">
           <h3 className="text-lg font-semibold text-slate-950">
             Réapprovisionnement suggéré
@@ -133,14 +133,14 @@ export function InsightsPanel({
 
         <div className="space-y-3">
           {analysis.reorderSuggestions.length === 0 ? (
-            <div className="rounded-2xl bg-emerald-50 p-4 text-sm text-emerald-800">
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
               Aucun réapprovisionnement prioritaire n&apos;est détecté.
             </div>
           ) : (
             analysis.reorderSuggestions.map((item) => (
               <article
                 key={item.sku}
-                className="rounded-2xl border border-slate-200 p-4"
+                className="panel-card p-4"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -156,19 +156,19 @@ export function InsightsPanel({
                   </span>
                 </div>
                 <div className="mt-4 grid grid-cols-3 gap-3 text-sm">
-                  <div className="rounded-xl bg-slate-50 p-3">
+                  <div className="rounded-lg bg-slate-50 p-3">
                     <p className="text-slate-500">Stock</p>
                     <p className="mt-1 font-semibold text-slate-900">
                       {formatNumber(item.currentStock)}
                     </p>
                   </div>
-                  <div className="rounded-xl bg-slate-50 p-3">
+                  <div className="rounded-lg bg-slate-50 p-3">
                     <p className="text-slate-500">Prévision</p>
                     <p className="mt-1 font-semibold text-slate-900">
                       {formatNumber(item.forecastUnits)}
                     </p>
                   </div>
-                  <div className="rounded-xl bg-slate-50 p-3">
+                  <div className="rounded-lg bg-slate-50 p-3">
                     <p className="text-slate-500">À recommander</p>
                     <p className="mt-1 font-semibold text-slate-900">
                       {formatNumber(item.reorderQuantity)}

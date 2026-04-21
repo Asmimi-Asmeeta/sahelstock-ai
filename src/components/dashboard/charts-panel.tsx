@@ -34,7 +34,7 @@ function tooltipCurrency(value: unknown) {
 export function ChartsPanel({ analysis }: ChartsPanelProps) {
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="panel-card p-5">
         <div className="mb-4">
           <h3 className="text-lg font-semibold text-slate-950">Ventes par mois</h3>
           <p className="text-sm text-slate-500">
@@ -54,7 +54,7 @@ export function ChartsPanel({ analysis }: ChartsPanelProps) {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="panel-card p-5">
         <div className="mb-4">
           <h3 className="text-lg font-semibold text-slate-950">Top produits</h3>
           <p className="text-sm text-slate-500">
@@ -86,7 +86,7 @@ export function ChartsPanel({ analysis }: ChartsPanelProps) {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="panel-card p-5">
         <div className="mb-4">
           <h3 className="text-lg font-semibold text-slate-950">
             Stock actuel vs seuil minimum
@@ -123,7 +123,7 @@ export function ChartsPanel({ analysis }: ChartsPanelProps) {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <section className="panel-card p-5">
         <div className="mb-4">
           <h3 className="text-lg font-semibold text-slate-950">
             Produits en risque de rupture

@@ -117,7 +117,7 @@ export function UploadWorkspace() {
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-8 sm:px-6 lg:px-8">
-      <section className="rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-blue-50 p-6 shadow-sm sm:p-8">
+      <section className="panel-card-soft bg-gradient-to-br from-white via-slate-50 to-blue-50 p-6 sm:p-8">
         <span className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">
           Import de données
         </span>
@@ -148,14 +148,14 @@ export function UploadWorkspace() {
       </section>
 
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <section className="panel-card p-6 sm:p-8">
           <h2 className="text-xl font-semibold text-slate-950">Fichiers attendus</h2>
           <p className="mt-2 text-sm leading-6 text-slate-600">
             Les formats acceptés sont `.csv`, `.xlsx` et `.xls`.
           </p>
 
           <div className="mt-6 grid gap-6 md:grid-cols-2">
-            <div className="rounded-2xl border border-slate-200 p-5">
+            <div className="panel-card p-5">
               <label className="text-sm font-semibold text-slate-900">
                 Fichier produits
               </label>
@@ -165,14 +165,14 @@ export function UploadWorkspace() {
                 onChange={(event) =>
                   setProductsFile(event.target.files?.[0] ?? null)
                 }
-                className="mt-4 block w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm text-slate-600 file:mr-4 file:rounded-full file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-500"
+                className="mt-4 block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-600 file:mr-4 file:rounded-full file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-500"
               />
               <p className="mt-3 text-xs text-slate-500">
                 Colonnes minimales : {REQUIRED_PRODUCT_COLUMNS.join(", ")}
               </p>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 p-5">
+            <div className="panel-card p-5">
               <label className="text-sm font-semibold text-slate-900">
                 Fichier ventes
               </label>
@@ -180,7 +180,7 @@ export function UploadWorkspace() {
                 type="file"
                 accept=".csv,.xlsx,.xls"
                 onChange={(event) => setSalesFile(event.target.files?.[0] ?? null)}
-                className="mt-4 block w-full rounded-2xl border border-slate-300 px-4 py-3 text-sm text-slate-600 file:mr-4 file:rounded-full file:border-0 file:bg-emerald-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-emerald-500"
+                className="mt-4 block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-600 file:mr-4 file:rounded-full file:border-0 file:bg-emerald-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-emerald-500"
               />
               <p className="mt-3 text-xs text-slate-500">
                 Colonnes minimales : {REQUIRED_SALES_COLUMNS.join(", ")}
@@ -203,7 +203,7 @@ export function UploadWorkspace() {
           </div>
 
           {errors.length > 0 ? (
-            <div className="mt-6 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+            <div className="mt-6 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
               <p className="font-semibold">Import impossible</p>
               <ul className="mt-2 list-disc space-y-1 pl-5">
                 {errors.map((error) => (
@@ -214,14 +214,14 @@ export function UploadWorkspace() {
           ) : null}
 
           {successMessage ? (
-            <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
+            <div className="mt-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
               {successMessage}
             </div>
           ) : null}
         </section>
 
         <aside className="space-y-6">
-          <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <section className="panel-card p-6">
             <h2 className="text-lg font-semibold text-slate-950">
               Bonnes pratiques d&apos;import
             </h2>
@@ -233,11 +233,11 @@ export function UploadWorkspace() {
             </ul>
           </section>
 
-          <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <section className="panel-card p-6">
             <h2 className="text-lg font-semibold text-slate-950">Ce que vous obtenez</h2>
             <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
               <li>KPI clés sur le stock, le chiffre d&apos;affaires et la marge.</li>
-              <li>Graphiques lisibles pour une démonstration en cours.</li>
+              <li>Graphiques lisibles pour piloter l&apos;activité plus vite.</li>
               <li>Alertes de rupture et suggestions de réapprovisionnement.</li>
               <li>Résumé intelligent en français avec fallback automatique.</li>
             </ul>

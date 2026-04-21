@@ -14,19 +14,17 @@ L'idée du projet est simple : permettre d'**importer des fichiers produits et v
 - suggestions de réapprovisionnement ;
 - résumé intelligent en français.
 
-Le projet est conçu comme un **MVP léger, crédible, propre et démontrable**, adapté à une remise académique.
+L'application est conçue comme une **première version légère, crédible et rapide à prendre en main**.
 
-## Objectif académique
+## Objectif du produit
 
-Ce dépôt constitue le livrable de code source pour l'**UA3 du cours de Chiffrier électronique**.
+SahelStock AI permet de :
 
-Il démontre :
-
-- l'intégration de **données tabulaires** ;
-- une **application web claire** et structurée ;
-- une **logique IA simple** avec fallback déterministe ;
-- une base de code **maintenable** et commentée ;
-- un projet prêt à être **installé, exécuté, buildé et déployé**.
+- centraliser des données produits et ventes dans une interface simple ;
+- visualiser rapidement les indicateurs essentiels ;
+- détecter les produits à surveiller et les besoins de réapprovisionnement ;
+- fournir un résumé clair en français, avec ou sans clé OpenAI ;
+- rester facile à installer, exécuter, build et déployer.
 
 ## Fonctionnalités principales
 
@@ -39,7 +37,7 @@ Landing page avec :
 - présentation du problème ;
 - explication de la solution ;
 - bénéfices ;
-- pricing fictif ;
+- grille tarifaire indicative ;
 - appels à l'action vers la démo et l'import.
 
 ### 2. `/upload`
@@ -133,7 +131,7 @@ Créer ensuite un fichier `.env.local` si vous souhaitez activer le résumé via
 OPENAI_API_KEY=votre_cle_api
 ```
 
-Sinon, aucune variable d'environnement n'est obligatoire pour utiliser le MVP.
+Sinon, aucune variable d'environnement n'est obligatoire pour utiliser l'application.
 
 ## Commandes npm
 
@@ -179,7 +177,7 @@ Exemple :
 
 ```csv
 sku,name,category,cost_price,sell_price,current_stock,min_stock,supplier
-+RIZ25KG,Riz local 25 kg,Epicerie,10800,13500,18,12,Cooperative Niamey
+RIZ25KG,Riz local 25 kg,Epicerie,10800,13500,18,12,Cooperative Niamey
 ```
 
 ### 2. `sales.csv` ou `sales.xlsx`
@@ -211,7 +209,7 @@ Sur la page `/upload`, le bouton **Charger une démo** permet :
 - de les enregistrer dans `localStorage` ;
 - d'ouvrir immédiatement le dashboard.
 
-Ce mode est pratique pour une démonstration en cours ou devant un professeur.
+Ce mode est pratique pour tester rapidement l'interface sans préparer de fichiers.
 
 ## Variables d'environnement
 
@@ -294,14 +292,14 @@ Le projet est compatible avec **Vercel**.
 - aucune base de données n'est requise ;
 - aucune authentification n'est nécessaire ;
 - les données sont stockées dans le navigateur via `localStorage` ;
-- l'application est donc simple à déployer pour une démonstration.
+- l'application est donc simple à déployer sur un compte Vercel standard.
 
 ## Choix de conception
 
 Le projet a été pensé pour rester :
 
 - **simple**, afin d'éviter la complexité inutile ;
-- **rapide à finir**, pour respecter le cadre académique ;
+- **rapide à prendre en main**, avec une structure claire ;
 - **léger**, avec peu de dépendances ;
 - **crédible**, grâce à une logique métier claire ;
 - **présentable**, avec une interface propre et mobile-first.
@@ -318,11 +316,11 @@ Cette première version comporte volontairement certaines limites :
 - résumé IA dépendant d'une clé OpenAI optionnelle ;
 - stockage local uniquement côté navigateur.
 
-Ces limites sont cohérentes avec un MVP académique léger.
+Ces limites sont cohérentes avec une première version volontairement légère.
 
 ## Démonstration conseillée
 
-Pour présenter le projet rapidement :
+Pour tester rapidement le produit :
 
 1. lancer l'application ;
 2. ouvrir `/upload` ;
@@ -340,4 +338,4 @@ Pour présenter le projet rapidement :
 - une intégration IA simple ;
 - un développement web moderne avec Next.js.
 
-Le projet est prêt pour une **remise en zip avec README complet**, une **démonstration académique** et un **déploiement sur Vercel**.
+Le projet est prêt pour une utilisation locale, une démonstration fonctionnelle et un déploiement sur **Vercel**.

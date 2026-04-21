@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "SahelStock AI",
   description:
-    "Mini SaaS académique pour importer des fichiers produits et ventes, suivre le stock et générer des recommandations en français.",
+    "Solution simple pour importer des fichiers produits et ventes, suivre le stock et generer des recommandations en francais.",
 };
 
 export default function RootLayout({
