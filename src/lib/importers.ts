@@ -6,7 +6,7 @@ import {
   REQUIRED_SALES_COLUMNS,
 } from "@/lib/constants";
 import type { Product, Sale } from "@/lib/types";
-import { normalizeText, parseNumber } from "@/lib/utils";
+import { normalizeText, normalizeUnit, parseNumber } from "@/lib/utils";
 
 type RawRow = Record<string, unknown>;
 
@@ -87,7 +87,7 @@ export async function parseProductsFile(file: File): Promise<ParsedImport<Produc
     const errors = validateRequiredColumns(
       rows,
       REQUIRED_PRODUCT_COLUMNS,
-      "products",
+      "produits",
     );
 
     if (errors.length > 0) {
@@ -104,6 +104,7 @@ export async function parseProductsFile(file: File): Promise<ParsedImport<Produc
         currentStock: parseNumber(row.current_stock),
         minStock: parseNumber(row.min_stock),
         supplier: normalizeText(row.supplier),
+        unit: normalizeUnit(row.unit),
       }))
       .filter((product) => product.sku && product.name);
 
@@ -111,7 +112,7 @@ export async function parseProductsFile(file: File): Promise<ParsedImport<Produc
       return {
         data: [],
         errors: [
-          "Le fichier products ne contient aucune ligne exploitable après nettoyage.",
+          "Le fichier produits ne contient aucune ligne exploitable après nettoyage.",
         ],
       };
     }
@@ -128,7 +129,7 @@ export async function parseProductsFile(file: File): Promise<ParsedImport<Produc
 export async function parseSalesFile(file: File): Promise<ParsedImport<Sale>> {
   try {
     const rows = await readRowsFromFile(file);
-    const errors = validateRequiredColumns(rows, REQUIRED_SALES_COLUMNS, "sales");
+    const errors = validateRequiredColumns(rows, REQUIRED_SALES_COLUMNS, "ventes");
 
     if (errors.length > 0) {
       return { data: [], errors };
@@ -147,7 +148,7 @@ export async function parseSalesFile(file: File): Promise<ParsedImport<Sale>> {
       return {
         data: [],
         errors: [
-          "Le fichier sales ne contient aucune ligne exploitable après nettoyage.",
+          "Le fichier ventes ne contient aucune ligne exploitable après nettoyage.",
         ],
       };
     }

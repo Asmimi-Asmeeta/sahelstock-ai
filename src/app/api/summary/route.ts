@@ -35,7 +35,7 @@ ${JSON.stringify(payload, null, 2)}
         {
           role: "system",
           content:
-            "Tu rédiges des résumés métiers courts, concrets, sobres et faciles à présenter à un enseignant.",
+            "Tu rédiges des résumés métiers courts, concrets, sobres et utiles pour un responsable de stock.",
         },
         {
           role: "user",

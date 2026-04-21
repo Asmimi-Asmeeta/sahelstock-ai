@@ -18,6 +18,7 @@ import {
   parseSalesFile,
 } from "@/lib/importers";
 import { saveDataset } from "@/lib/storage";
+import { RevealOnScroll } from "@/components/ui/reveal-on-scroll";
 
 export function UploadWorkspace() {
   const router = useRouter();
@@ -66,7 +67,7 @@ export function UploadWorkspace() {
 
     setSuccessMessage(
       source === "demo"
-        ? "Données de démonstration chargées avec succès."
+        ? "Jeu de démonstration chargé avec succès."
         : "Fichiers importés avec succès.",
     );
     setIsLoading(false);
@@ -76,7 +77,7 @@ export function UploadWorkspace() {
   const handleImport = async () => {
     if (!productsFile || !salesFile) {
       setErrors([
-        "Veuillez sélectionner un fichier products et un fichier sales avant l'import.",
+        "Veuillez sélectionner un fichier produits et un fichier ventes avant de lancer l'import.",
       ]);
       return;
     }
@@ -96,7 +97,7 @@ export function UploadWorkspace() {
       ]);
 
       if (!productsResponse.ok || !salesResponse.ok) {
-        throw new Error("Impossible de charger les fichiers de démonstration.");
+        throw new Error("Impossible de charger le jeu de démonstration.");
       }
 
       const [productsText, salesText] = await Promise.all([
@@ -109,7 +110,7 @@ export function UploadWorkspace() {
       setErrors([
         error instanceof Error
           ? error.message
-          : "Erreur lors du chargement de la démo.",
+          : "Erreur lors du chargement du jeu de démonstration.",
       ]);
       setIsLoading(false);
     }
@@ -117,45 +118,49 @@ export function UploadWorkspace() {
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-8 sm:px-6 lg:px-8">
-      <section className="panel-card-soft bg-gradient-to-br from-white via-slate-50 to-blue-50 p-6 sm:p-8">
-        <span className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">
-          Import de données
-        </span>
-        <h1 className="mt-4 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
-          Importez vos fichiers et obtenez un tableau de bord exploitable.
-        </h1>
-        <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600">
-          {APP_NAME} accepte deux fichiers tabulaires: un fichier produits et un
-          fichier ventes. L&apos;application valide les colonnes, nettoie les
-          données et les conserve dans le navigateur via le stockage local.
-        </p>
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <button
-            type="button"
-            onClick={handleLoadDemo}
-            disabled={isLoading}
-            className="rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
-          >
-            {isLoading ? "Chargement..." : "Charger une démo"}
-          </button>
-          <Link
-            href="/dashboard"
-            className="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-white"
-          >
-            Voir le tableau de bord
-          </Link>
-        </div>
-      </section>
+      <RevealOnScroll>
+        <section className="panel-card-soft bg-gradient-to-br from-white via-slate-50 to-blue-50 p-6 sm:p-8">
+          <span className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blue-700">
+            Import de données
+          </span>
+          <h1 className="mt-4 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
+            Importez vos fichiers et obtenez un tableau de bord exploitable.
+          </h1>
+          <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600">
+            {APP_NAME} accepte deux fichiers tabulaires: un fichier produits et un
+            fichier ventes. L&apos;application valide les colonnes, nettoie les
+            données et les conserve dans le navigateur via le stockage local.
+          </p>
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+            <button
+              type="button"
+              onClick={handleLoadDemo}
+              disabled={isLoading}
+              className="rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+            >
+              {isLoading ? "Chargement..." : "Charger une démo"}
+            </button>
+            <Link
+              href="/dashboard"
+              className="rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-white"
+            >
+              Voir le tableau de bord
+            </Link>
+          </div>
+        </section>
+      </RevealOnScroll>
 
-      <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-        <section className="panel-card p-6 sm:p-8">
+      <div className="section-shell">
+        <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+          <RevealOnScroll>
+            <section className="panel-card p-6 sm:p-8">
           <h2 className="text-xl font-semibold text-slate-950">Fichiers attendus</h2>
           <p className="mt-2 text-sm leading-6 text-slate-600">
             Les formats acceptés sont `.csv`, `.xlsx` et `.xls`.
           </p>
 
           <div className="mt-6 grid gap-6 md:grid-cols-2">
-            <div className="panel-card p-5">
+            <div className="panel-card-accent p-5">
               <label className="text-sm font-semibold text-slate-900">
                 Fichier produits
               </label>
@@ -169,6 +174,9 @@ export function UploadWorkspace() {
               />
               <p className="mt-3 text-xs text-slate-500">
                 Colonnes minimales : {REQUIRED_PRODUCT_COLUMNS.join(", ")}
+              </p>
+              <p className="mt-2 text-xs text-slate-500">
+                Colonne optionnelle : `unit` pour préciser l&apos;unité métier.
               </p>
             </div>
 
@@ -218,31 +226,37 @@ export function UploadWorkspace() {
               {successMessage}
             </div>
           ) : null}
-        </section>
+            </section>
+          </RevealOnScroll>
 
-        <aside className="space-y-6">
-          <section className="panel-card p-6">
-            <h2 className="text-lg font-semibold text-slate-950">
-              Bonnes pratiques d&apos;import
-            </h2>
-            <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
-              <li>Utilisez une ligne d&apos;en-tête unique et propre.</li>
-              <li>Gardez les `sku` identiques entre produits et ventes.</li>
-              <li>Vérifiez que les dates de ventes sont cohérentes.</li>
-              <li>Évitez les cellules fusionnées dans les fichiers Excel.</li>
-            </ul>
-          </section>
+          <aside className="space-y-6">
+            <RevealOnScroll delay={90}>
+              <section className="panel-card p-6">
+                <h2 className="text-lg font-semibold text-slate-950">
+                  Bonnes pratiques d&apos;import
+                </h2>
+                <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
+                  <li>Utilisez une ligne d&apos;en-tête unique et propre.</li>
+                  <li>Gardez les `sku` identiques entre produits et ventes.</li>
+                  <li>Vérifiez que les dates de ventes sont cohérentes.</li>
+                  <li>Évitez les cellules fusionnées dans les fichiers Excel.</li>
+                </ul>
+              </section>
+            </RevealOnScroll>
 
-          <section className="panel-card p-6">
-            <h2 className="text-lg font-semibold text-slate-950">Ce que vous obtenez</h2>
-            <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
-              <li>KPI clés sur le stock, le chiffre d&apos;affaires et la marge.</li>
-              <li>Graphiques lisibles pour piloter l&apos;activité plus vite.</li>
-              <li>Alertes de rupture et suggestions de réapprovisionnement.</li>
-              <li>Résumé intelligent en français avec fallback automatique.</li>
-            </ul>
-          </section>
-        </aside>
+            <RevealOnScroll delay={180}>
+              <section className="panel-card-accent p-6">
+                <h2 className="text-lg font-semibold text-slate-950">Ce que vous obtenez</h2>
+                <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
+                  <li>KPI clés sur le stock, le chiffre d&apos;affaires et la marge.</li>
+                  <li>Graphiques lisibles pour piloter l&apos;activité plus vite.</li>
+                  <li>Alertes de stock et suggestions de réapprovisionnement.</li>
+                  <li>Résumé intelligent en français avec fallback automatique.</li>
+                </ul>
+              </section>
+            </RevealOnScroll>
+          </aside>
+        </div>
       </div>
     </div>
   );

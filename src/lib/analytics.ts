@@ -141,6 +141,7 @@ function buildProductPerformance(products: Product[], sales: Sale[]) {
       riskLevel,
       reorderQuantity,
       supplier: product.supplier,
+      unit: product.unit,
     };
   });
 }
@@ -157,9 +158,9 @@ function riskDistribution(rows: ProductPerformance[]): ChartPoint[] {
   });
 
   return [
-    { label: "Faible", value: counts.faible },
-    { label: "Moyen", value: counts.moyen },
-    { label: "Eleve", value: counts.eleve },
+    { label: "Stock correct", value: counts.faible },
+    { label: "À surveiller", value: counts.moyen },
+    { label: "Rupture probable", value: counts.eleve },
   ];
 }
 
@@ -238,6 +239,7 @@ export function buildSummaryPayload(
       sku: item.sku,
       units: item.totalUnitsSold,
       revenue: item.totalRevenue,
+      unit: item.unit,
     })),
     riskProducts: analysis.riskProducts.slice(0, 5).map((item) => ({
       name: item.name,
@@ -245,12 +247,14 @@ export function buildSummaryPayload(
       stock: item.currentStock,
       minStock: item.minStock,
       riskLevel: item.riskLevel,
+      unit: item.unit,
     })),
     reorderSuggestions: analysis.reorderSuggestions.slice(0, 5).map((item) => ({
       name: item.name,
       sku: item.sku,
       quantity: item.reorderQuantity,
       supplier: item.supplier,
+      unit: item.unit,
     })),
     marginOpportunities: analysis.marginOpportunities.map((item) => ({
       name: item.name,

@@ -1,13 +1,10 @@
 import type { SummaryPayload } from "@/lib/types";
-import { formatCurrency, formatNumber } from "@/lib/utils";
-
-function humanRiskLevel(level: SummaryPayload["riskProducts"][number]["riskLevel"]) {
-  if (level === "eleve") {
-    return "élevé";
-  }
-
-  return level;
-}
+import {
+  formatCurrency,
+  formatNumber,
+  formatQuantityWithUnit,
+  humanizeRiskLevel,
+} from "@/lib/utils";
 
 export function buildFallbackSummary(payload: SummaryPayload) {
   const topSeller = payload.topSellers[0];
@@ -21,19 +18,19 @@ export function buildFallbackSummary(payload: SummaryPayload) {
 
   if (topSeller) {
     parts.push(
-      `La meilleure vente actuelle est ${topSeller.name} (${topSeller.sku}) avec ${formatNumber(topSeller.units)} unités vendues pour ${formatCurrency(topSeller.revenue)} de revenus.`,
+      `La meilleure vente actuelle est ${topSeller.name} (${topSeller.sku}) avec ${formatQuantityWithUnit(topSeller.units, topSeller.unit)} commercialisées pour ${formatCurrency(topSeller.revenue)} de revenus.`,
     );
   }
 
   if (firstRisk) {
     parts.push(
-      `Le produit à surveiller en priorité est ${firstRisk.name} (${firstRisk.sku}) : stock actuel ${formatNumber(firstRisk.stock)} contre un seuil minimum de ${formatNumber(firstRisk.minStock)}, soit un risque ${humanRiskLevel(firstRisk.riskLevel)}.`,
+      `Le produit à suivre en priorité est ${firstRisk.name} (${firstRisk.sku}) : stock actuel ${formatQuantityWithUnit(firstRisk.stock, firstRisk.unit)} contre un seuil minimum de ${formatQuantityWithUnit(firstRisk.minStock, firstRisk.unit)}, avec un niveau ${humanizeRiskLevel(firstRisk.riskLevel).toLowerCase()}.`,
     );
   }
 
   if (firstReorder) {
     parts.push(
-      `Une action concrète consiste à recommander environ ${formatNumber(firstReorder.quantity)} unités de ${firstReorder.name} auprès de ${firstReorder.supplier}.`,
+      `Une action concrète consiste à recommander environ ${formatQuantityWithUnit(firstReorder.quantity, firstReorder.unit)} de ${firstReorder.name} auprès de ${firstReorder.supplier}.`,
     );
   }
 

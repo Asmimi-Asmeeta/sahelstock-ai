@@ -1,7 +1,13 @@
 "use client";
 
 import type { DashboardAnalysis } from "@/lib/types";
-import { createCsv, downloadTextFile, formatCurrency, formatNumber } from "@/lib/utils";
+import {
+  createCsv,
+  downloadTextFile,
+  formatCurrency,
+  formatQuantityWithUnit,
+  humanizeRiskLevel,
+} from "@/lib/utils";
 
 type InsightsPanelProps = {
   analysis: DashboardAnalysis;
@@ -11,14 +17,14 @@ type InsightsPanelProps = {
 
 function riskBadge(level: string) {
   if (level === "eleve") {
-    return "bg-rose-100 text-rose-700";
+    return "border border-slate-300 bg-slate-900 text-white";
   }
 
   if (level === "moyen") {
-    return "bg-amber-100 text-amber-700";
+    return "border border-amber-200 bg-amber-50 text-amber-800";
   }
 
-  return "bg-emerald-100 text-emerald-700";
+  return "border border-slate-200 bg-slate-50 text-slate-700";
 }
 
 export function InsightsPanel({
@@ -32,7 +38,7 @@ export function InsightsPanel({
       ...analysis.reorderSuggestions.map((item) => [
         item.sku,
         item.name,
-        item.riskLevel,
+        humanizeRiskLevel(item.riskLevel),
         String(item.currentStock),
         String(item.minStock),
         String(item.forecastUnits),
@@ -82,7 +88,7 @@ export function InsightsPanel({
                 <li key={item.sku} className="flex items-center justify-between gap-3">
                   <span>{item.name}</span>
                   <span className="font-medium text-slate-900">
-                    {formatNumber(item.totalUnitsSold)} u.
+                    {formatQuantityWithUnit(item.totalUnitsSold, item.unit)}
                   </span>
                 </li>
               ))}
@@ -96,9 +102,9 @@ export function InsightsPanel({
                 <li key={item.sku} className="flex items-center justify-between gap-3">
                   <span>{item.name}</span>
                   <span
-                    className={`rounded-full px-2 py-1 text-xs font-semibold ${riskBadge(item.riskLevel)}`}
+                    className={`rounded-full px-3 py-1 text-xs font-semibold ${riskBadge(item.riskLevel)}`}
                   >
-                    {item.riskLevel}
+                    {humanizeRiskLevel(item.riskLevel)}
                   </span>
                 </li>
               ))}
@@ -134,7 +140,7 @@ export function InsightsPanel({
         <div className="space-y-3">
           {analysis.reorderSuggestions.length === 0 ? (
             <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
-              Aucun réapprovisionnement prioritaire n&apos;est détecté.
+              Aucun réassort prioritaire n&apos;est nécessaire pour le moment.
             </div>
           ) : (
             analysis.reorderSuggestions.map((item) => (
@@ -150,28 +156,28 @@ export function InsightsPanel({
                     </p>
                   </div>
                   <span
-                    className={`rounded-full px-2 py-1 text-xs font-semibold ${riskBadge(item.riskLevel)}`}
+                    className={`rounded-full px-3 py-1 text-xs font-semibold ${riskBadge(item.riskLevel)}`}
                   >
-                    {item.riskLevel}
+                    {humanizeRiskLevel(item.riskLevel)}
                   </span>
                 </div>
                 <div className="mt-4 grid grid-cols-3 gap-3 text-sm">
                   <div className="rounded-lg bg-slate-50 p-3">
                     <p className="text-slate-500">Stock</p>
                     <p className="mt-1 font-semibold text-slate-900">
-                      {formatNumber(item.currentStock)}
+                      {formatQuantityWithUnit(item.currentStock, item.unit)}
                     </p>
                   </div>
                   <div className="rounded-lg bg-slate-50 p-3">
                     <p className="text-slate-500">Prévision</p>
                     <p className="mt-1 font-semibold text-slate-900">
-                      {formatNumber(item.forecastUnits)}
+                      {formatQuantityWithUnit(item.forecastUnits, item.unit)}
                     </p>
                   </div>
                   <div className="rounded-lg bg-slate-50 p-3">
-                    <p className="text-slate-500">À recommander</p>
+                    <p className="text-slate-500">Réassort conseillé</p>
                     <p className="mt-1 font-semibold text-slate-900">
-                      {formatNumber(item.reorderQuantity)}
+                      {formatQuantityWithUnit(item.reorderQuantity, item.unit)}
                     </p>
                   </div>
                 </div>

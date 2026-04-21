@@ -21,7 +21,7 @@ type ChartsPanelProps = {
   analysis: DashboardAnalysis;
 };
 
-const riskColors = ["#16a34a", "#f59e0b", "#dc2626"];
+const riskColors = ["#94a3b8", "#f59e0b", "#0f172a"];
 
 function tooltipNumber(value: unknown) {
   return formatNumber(typeof value === "number" ? value : Number(value ?? 0));
@@ -69,7 +69,7 @@ export function ChartsPanel({ analysis }: ChartsPanelProps) {
               <YAxis
                 type="category"
                 dataKey="label"
-                width={110}
+                width={145}
                 tickLine={false}
                 axisLine={false}
               />
@@ -77,7 +77,7 @@ export function ChartsPanel({ analysis }: ChartsPanelProps) {
                 formatter={(value, name) =>
                   name === "secondaryValue"
                     ? tooltipCurrency(value)
-                    : `${tooltipNumber(value)} unités`
+                    : `${tooltipNumber(value)} ventes`
                 }
               />
               <Bar dataKey="value" fill="#0f766e" radius={[0, 10, 10, 0]} />
@@ -92,7 +92,7 @@ export function ChartsPanel({ analysis }: ChartsPanelProps) {
             Stock actuel vs seuil minimum
           </h3>
           <p className="text-sm text-slate-500">
-            Contrôle des niveaux de sécurité pour les produits sensibles.
+            Contrôle rapide des niveaux de stock par produit.
           </p>
         </div>
         <div className="h-80">
@@ -109,7 +109,7 @@ export function ChartsPanel({ analysis }: ChartsPanelProps) {
                 height={70}
               />
               <YAxis tickLine={false} axisLine={false} />
-              <Tooltip formatter={(value) => `${tooltipNumber(value)} unités`} />
+              <Tooltip formatter={(value) => `${tooltipNumber(value)} en stock`} />
               <Legend />
               <Bar dataKey="value" name="Stock actuel" fill="#2563eb" radius={[10, 10, 0, 0]} />
               <Bar
@@ -126,10 +126,10 @@ export function ChartsPanel({ analysis }: ChartsPanelProps) {
       <section className="panel-card p-5">
         <div className="mb-4">
           <h3 className="text-lg font-semibold text-slate-950">
-            Produits en risque de rupture
+            Niveau d&apos;attention du stock
           </h3>
           <p className="text-sm text-slate-500">
-            Répartition des produits selon le niveau de risque.
+            Répartition des produits selon le niveau d&apos;attention requis.
           </p>
         </div>
         <div className="h-80">

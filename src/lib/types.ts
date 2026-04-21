@@ -7,6 +7,7 @@ export type Product = {
   currentStock: number;
   minStock: number;
   supplier: string;
+  unit: string;
 };
 
 export type Sale = {
@@ -38,6 +39,7 @@ export type ProductPerformance = {
   riskLevel: RiskLevel;
   reorderQuantity: number;
   supplier: string;
+  unit: string;
 };
 
 export type KpiSummary = {
@@ -75,6 +77,7 @@ export type SummaryPayload = {
     sku: string;
     units: number;
     revenue: number;
+    unit: string;
   }>;
   riskProducts: Array<{
     name: string;
@@ -82,12 +85,14 @@ export type SummaryPayload = {
     stock: number;
     minStock: number;
     riskLevel: RiskLevel;
+    unit: string;
   }>;
   reorderSuggestions: Array<{
     name: string;
     sku: string;
     quantity: number;
     supplier: string;
+    unit: string;
   }>;
   marginOpportunities: Array<{
     name: string;
