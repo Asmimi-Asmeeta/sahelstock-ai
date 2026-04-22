@@ -1,4 +1,4 @@
-import type { ChartPoint, DashboardAnalysis } from "@/lib/types";
+import type { ChartPoint, DashboardAnalysis, ProductPerformance } from "@/lib/types";
 import {
   createCsv,
   downloadTextFile,
@@ -29,6 +29,18 @@ function escapeHtml(value: string) {
 
 function truncateLabel(label: string, maxLength = 12) {
   return label.length > maxLength ? `${label.slice(0, maxLength - 3)}...` : label;
+}
+
+function riskPillClass(level: string) {
+  if (level === "eleve") {
+    return "pill-red";
+  }
+
+  if (level === "moyen") {
+    return "pill-amber";
+  }
+
+  return "pill-emerald";
 }
 
 function createEmptySvg(message: string, width = 720, height = 300) {
@@ -92,7 +104,7 @@ function createVerticalBarChartSvg(
     .join("");
 
   return `
-    <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Histogramme">
+    <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Histogramme des ventes">
       <rect x="0" y="0" width="${width}" height="${height}" rx="22" fill="#ffffff" stroke="#cbd5e1" />
       ${guideLines}
       ${bars}
@@ -139,7 +151,7 @@ function createHorizontalBarChartSvg(
     .join("");
 
   return `
-    <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Barres horizontales">
+    <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Classement des produits">
       <rect x="0" y="0" width="${width}" height="${height}" rx="22" fill="#ffffff" stroke="#cbd5e1" />
       ${bars}
     </svg>
@@ -189,7 +201,7 @@ function createGroupedBarChartSvg(items: ChartPoint[]) {
     .join("");
 
   return `
-    <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Stock et seuil minimum">
+    <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Comparaison entre stock actuel et stock minimum">
       <rect x="0" y="0" width="${width}" height="${height}" rx="22" fill="#ffffff" stroke="#cbd5e1" />
       <g transform="translate(${width - 208}, 18)">
         <rect x="0" y="0" width="14" height="14" rx="7" fill="#2563eb" />
@@ -337,37 +349,98 @@ function buildTable(headers: string[], rows: string[][]) {
   `;
 }
 
+function buildPriorityCards(items: ProductPerformance[]) {
+  if (items.length === 0) {
+    return `
+      <article class="action-card action-card-empty">
+        <h3>Aucun réassort urgent</h3>
+        <p>Le niveau de stock actuel ne nécessite pas d'action immédiate sur les références suivies.</p>
+      </article>
+    `;
+  }
+
+  return items
+    .slice(0, 3)
+    .map(
+      (item) => `
+        <article class="action-card">
+          <div class="action-top">
+            <div>
+              <h3>${escapeHtml(item.name)}</h3>
+              <p>SKU ${escapeHtml(item.sku)} · ${escapeHtml(item.supplier)}</p>
+            </div>
+            <span class="pill ${riskPillClass(item.riskLevel)}">${escapeHtml(
+              humanizeRiskLevel(item.riskLevel),
+            )}</span>
+          </div>
+          <div class="action-grid">
+            <div>
+              <strong>Stock</strong>
+              <span>${escapeHtml(formatQuantityWithUnit(item.currentStock, item.unit))}</span>
+            </div>
+            <div>
+              <strong>Prévision</strong>
+              <span>${escapeHtml(formatQuantityWithUnit(item.forecastUnits, item.unit))}</span>
+            </div>
+            <div>
+              <strong>À commander</strong>
+              <span>${escapeHtml(formatQuantityWithUnit(item.reorderQuantity, item.unit))}</span>
+            </div>
+          </div>
+        </article>
+      `,
+    )
+    .join("");
+}
+
 export function createRecommendationsCsv(analysis: DashboardAnalysis) {
+  const exportRows =
+    analysis.reorderSuggestions.length > 0
+      ? analysis.reorderSuggestions
+      : analysis.riskProducts;
+
   const rows = [
     [
-      "sku",
-      "produit",
-      "risque",
-      "stock_actuel",
-      "stock_minimum",
-      "prevision_mois_suivant",
-      "quantite_recommandee",
-      "fournisseur",
+      "Produit",
+      "SKU",
+      "Catégorie",
+      "Niveau de risque",
+      "Stock actuel",
+      "Stock minimum",
+      "Prévision du mois suivant",
+      "Quantité recommandée",
+      "Unité",
+      "Fournisseur",
+      "Ventes cumulées",
+      "Chiffre d'affaires cumulé (FCFA)",
+      "Marge estimée (FCFA)",
     ],
-    ...analysis.reorderSuggestions.map((item) => [
-      item.sku,
+    ...exportRows.map((item) => [
       item.name,
+      item.sku,
+      item.category,
       humanizeRiskLevel(item.riskLevel),
       String(item.currentStock),
       String(item.minStock),
       String(item.forecastUnits),
       String(item.reorderQuantity),
+      item.unit,
       item.supplier,
+      String(item.totalUnitsSold),
+      String(item.totalRevenue),
+      String(item.estimatedMargin),
     ]),
   ];
 
-  return createCsv(rows);
+  return createCsv(rows, { delimiter: ";" });
 }
 
 export function downloadRecommendationsCsv(analysis: DashboardAnalysis) {
   downloadTextFile(
-    "sahelstock-recommandations.csv",
+    "sahelstock-reapprovisionnement.csv",
     createRecommendationsCsv(analysis),
+    "text/csv;charset=utf-8;",
+    { includeBom: true },
   );
 }
 
@@ -408,11 +481,11 @@ export function buildDashboardReportHtml({
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>SahelStock AI - Rapport d'analyse</title>
+        <title>SahelStock AI — Rapport d'analyse</title>
         <style>
           :root {
             color-scheme: light;
-            --bg: #f8fafc;
+            --bg: #f6f8fc;
             --panel: #ffffff;
             --line: #dbe4ef;
             --text: #0f172a;
@@ -422,7 +495,7 @@ export function buildDashboardReportHtml({
             --teal: #0f766e;
             --amber: #f59e0b;
             --emerald: #10b981;
-            --red: #dc2626;
+            --red: #b91c1c;
           }
 
           * {
@@ -431,7 +504,9 @@ export function buildDashboardReportHtml({
 
           body {
             margin: 0;
-            background: linear-gradient(180deg, #eff6ff 0%, var(--bg) 18%, var(--bg) 100%);
+            background:
+              radial-gradient(circle at top right, rgba(37, 99, 235, 0.12), transparent 28%),
+              linear-gradient(180deg, #eef4ff 0%, var(--bg) 16%, var(--bg) 100%);
             color: var(--text);
             font-family: Arial, Helvetica, sans-serif;
           }
@@ -439,11 +514,12 @@ export function buildDashboardReportHtml({
           main {
             max-width: 1240px;
             margin: 0 auto;
-            padding: 36px 24px 56px;
+            padding: 32px 24px 56px;
           }
 
           .hero,
-          .panel {
+          .panel,
+          .action-card {
             background: var(--panel);
             border: 1px solid var(--line);
             border-radius: 24px;
@@ -464,7 +540,7 @@ export function buildDashboardReportHtml({
 
           .hero p {
             margin: 0;
-            max-width: 800px;
+            max-width: 820px;
             color: rgba(255, 255, 255, 0.86);
             line-height: 1.7;
           }
@@ -515,9 +591,16 @@ export function buildDashboardReportHtml({
             font-size: 22px;
           }
 
+          .section-subtitle {
+            margin: -4px 0 18px;
+            color: var(--soft);
+            line-height: 1.6;
+          }
+
           .kpi-grid,
           .chart-grid,
-          .table-grid {
+          .table-grid,
+          .priority-grid {
             display: grid;
             gap: 18px;
           }
@@ -527,11 +610,11 @@ export function buildDashboardReportHtml({
             margin-top: 22px;
           }
 
-          .chart-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            margin-top: 18px;
+          .priority-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
           }
 
+          .chart-grid,
           .table-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
             margin-top: 18px;
@@ -542,7 +625,8 @@ export function buildDashboardReportHtml({
           }
 
           .panel h2,
-          .panel h3 {
+          .panel h3,
+          .action-card h3 {
             margin: 0 0 10px;
           }
 
@@ -576,6 +660,87 @@ export function buildDashboardReportHtml({
 
           .chart-frame {
             margin-top: 12px;
+          }
+
+          .action-card {
+            padding: 20px;
+          }
+
+          .action-card-empty {
+            grid-column: 1 / -1;
+          }
+
+          .action-top {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            justify-content: space-between;
+          }
+
+          .action-top p {
+            margin: 0;
+            color: var(--soft);
+            line-height: 1.6;
+          }
+
+          .action-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 18px;
+          }
+
+          .action-grid div {
+            padding: 14px;
+            border-radius: 16px;
+            background: #f8fafc;
+          }
+
+          .action-grid strong,
+          .action-grid span {
+            display: block;
+          }
+
+          .action-grid strong {
+            margin-bottom: 6px;
+            font-size: 12px;
+            color: var(--soft);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+          }
+
+          .action-grid span {
+            font-weight: 700;
+          }
+
+          .pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+          }
+
+          .pill-red {
+            color: #991b1b;
+            background: #fee2e2;
+            border-color: rgba(220, 38, 38, 0.4);
+          }
+
+          .pill-amber {
+            color: #b45309;
+            background: #fef3c7;
+            border-color: rgba(245, 158, 11, 0.4);
+          }
+
+          .pill-emerald {
+            color: #047857;
+            background: #d1fae5;
+            border-color: rgba(16, 185, 129, 0.32);
           }
 
           .table-wrap {
@@ -627,6 +792,12 @@ export function buildDashboardReportHtml({
             line-height: 1.7;
           }
 
+          .footer-note {
+            margin-top: 16px;
+            color: var(--soft);
+            font-size: 13px;
+          }
+
           @media print {
             body {
               background: #ffffff;
@@ -642,9 +813,10 @@ export function buildDashboardReportHtml({
               grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
+            .hero-meta,
+            .priority-grid,
             .chart-grid,
-            .table-grid,
-            .hero-meta {
+            .table-grid {
               grid-template-columns: 1fr;
             }
           }
@@ -667,7 +839,9 @@ export function buildDashboardReportHtml({
               </div>
               <div>
                 <strong>Génération du rapport</strong>
-                <span>${escapeHtml(reportGeneratedAt)} - ${summaryMode === "openai" ? "Résumé IA" : "Résumé local"}</span>
+                <span>${escapeHtml(reportGeneratedAt)} · ${
+                  summaryMode === "openai" ? "Résumé IA" : "Résumé local"
+                }</span>
               </div>
             </div>
           </section>
@@ -685,11 +859,12 @@ export function buildDashboardReportHtml({
               .join("")}
           </section>
 
-          <h2 class="section-title">Lecture rapide</h2>
-          <section class="panel">
-            <p class="summary-copy">
-              Ce rapport consolide les ventes, les produits à surveiller, les besoins de réassort et les opportunités de marge. Il peut être joint tel quel à une soutenance, ou réutilisé comme base de travail pour un livrable PPT ou Excel.
-            </p>
+          <h2 class="section-title">Actions prioritaires</h2>
+          <p class="section-subtitle">
+            Les trois premières recommandations à présenter ou à exécuter en priorité.
+          </p>
+          <section class="priority-grid">
+            ${buildPriorityCards(analysis.reorderSuggestions)}
           </section>
 
           <h2 class="section-title">Graphiques clés</h2>
@@ -719,8 +894,8 @@ export function buildDashboardReportHtml({
             </article>
 
             <article class="panel">
-              <h3>Stock vs seuil minimum</h3>
-              <p class="caption">Lecture rapide des tensions de stock sur les produits suivis.</p>
+              <h3>Stock actuel vs seuil minimum</h3>
+              <p class="caption">Comparaison rapide entre le stock disponible et le seuil de sécurité.</p>
               <div class="chart-frame">
                 ${createGroupedBarChartSvg(analysis.stockVsMinimum)}
               </div>
@@ -735,7 +910,7 @@ export function buildDashboardReportHtml({
             </article>
           </section>
 
-          <h2 class="section-title">Tables de décision</h2>
+          <h2 class="section-title">Tables de synthèse</h2>
           <section class="table-grid">
             <article class="panel">
               <h3>Produits à surveiller</h3>
@@ -801,8 +976,17 @@ export function buildDashboardReportHtml({
 
           <section class="method">
             <strong>Méthode de lecture</strong><br />
-            Le niveau de risque est dérivé d'un ratio simple entre le stock actuel, le stock minimum et la prévision du mois suivant. Le CSV reste utile pour les échanges de données brutes, tandis que ce rapport HTML sert de livrable visuel propre avec les graphiques, les KPI et les recommandations.
+            Le niveau de risque est dérivé d'un ratio simple entre le stock actuel,
+            le stock minimum et la prévision du mois suivant. Le CSV sert aux
+            échanges de données brutes, tandis que ce rapport HTML fournit un
+            livrable visuel propre avec graphiques, KPI et recommandations.
           </section>
+
+          <p class="footer-note">
+            Astuce pratique : ouvrez ce fichier HTML dans votre navigateur puis
+            utilisez “Imprimer en PDF” pour obtenir une version propre à partager
+            ou à archiver.
+          </p>
         </main>
       </body>
     </html>
@@ -814,5 +998,6 @@ export function downloadDashboardReport(options: DashboardReportOptions) {
     "sahelstock-rapport-analyse.html",
     buildDashboardReportHtml(options),
     "text/html;charset=utf-8;",
+    { includeBom: true },
   );
 }

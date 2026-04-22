@@ -1,3 +1,12 @@
+type DownloadOptions = {
+  includeBom?: boolean;
+};
+
+type CsvOptions = {
+  delimiter?: string;
+  lineBreak?: string;
+};
+
 export function formatCurrency(value: number) {
   return new Intl.NumberFormat("fr-FR", {
     style: "currency",
@@ -120,9 +129,13 @@ export function downloadFile(
   filename: string,
   content: Blob | string,
   mimeType = "text/plain;charset=utf-8;",
+  options: DownloadOptions = {},
 ) {
+  const { includeBom = false } = options;
   const blob =
-    content instanceof Blob ? content : new Blob([content], { type: mimeType });
+    content instanceof Blob
+      ? content
+      : new Blob(includeBom ? ["\uFEFF", content] : [content], { type: mimeType });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
@@ -135,16 +148,19 @@ export function downloadTextFile(
   filename: string,
   content: string,
   mimeType = "text/csv;charset=utf-8;",
+  options: DownloadOptions = { includeBom: true },
 ) {
-  downloadFile(filename, content, mimeType);
+  downloadFile(filename, content, mimeType, options);
 }
 
-export function createCsv(rows: string[][]) {
+export function createCsv(rows: string[][], options: CsvOptions = {}) {
+  const { delimiter = ",", lineBreak = "\r\n" } = options;
+
   return rows
     .map((row) =>
       row
         .map((cell) => `"${String(cell).replaceAll('"', '""')}"`)
-        .join(","),
+        .join(delimiter),
     )
-    .join("\n");
+    .join(lineBreak);
 }

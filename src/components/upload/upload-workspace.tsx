@@ -8,8 +8,10 @@ import {
   APP_NAME,
   DEMO_PRODUCTS_URL,
   DEMO_SALES_URL,
-  REQUIRED_PRODUCT_COLUMNS,
-  REQUIRED_SALES_COLUMNS,
+  PRODUCT_IMPORT_HEADER_HINTS,
+  SALES_IMPORT_HEADER_HINTS,
+  TEST_SCENARIO_PRODUCTS_URL,
+  TEST_SCENARIO_SALES_URL,
 } from "@/lib/constants";
 import {
   parseProductsCsvText,
@@ -178,7 +180,8 @@ export function UploadWorkspace() {
             Importez vos fichiers et obtenez un tableau de bord exploitable.
           </h1>
           <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600">
-            {APP_NAME} accepte deux fichiers tabulaires : un fichier produits et un
+            {APP_NAME}{" "}
+            accepte deux fichiers tabulaires : un fichier produits et un
             fichier ventes. L&apos;application contrôle les colonnes, vérifie la
             cohérence des données et conserve le jeu importé dans votre navigateur.
           </p>
@@ -207,7 +210,7 @@ export function UploadWorkspace() {
             <section className="panel-card p-6 sm:p-8">
               <h2 className="text-xl font-semibold text-slate-950">Fichiers attendus</h2>
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                Les formats acceptés sont `.csv`, `.xlsx` et `.xls`.
+                Les formats acceptés sont CSV, XLSX et XLS.
               </p>
 
               <div className="mt-6 grid gap-6 md:grid-cols-2">
@@ -223,11 +226,11 @@ export function UploadWorkspace() {
                     }
                     className="mt-4 block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-600 file:mr-4 file:rounded-full file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-500"
                   />
-                  <p className="mt-3 text-xs text-slate-500">
-                    Colonnes minimales : {REQUIRED_PRODUCT_COLUMNS.join(", ")}
+                  <p className="mt-3 text-xs leading-5 text-slate-500">
+                    Colonnes minimales acceptées en anglais ou en français :
                   </p>
-                  <p className="mt-2 text-xs text-slate-500">
-                    Colonne optionnelle : `unit` pour préciser l&apos;unité métier.
+                  <p className="mt-2 text-xs leading-5 text-slate-500">
+                    {PRODUCT_IMPORT_HEADER_HINTS.join(" · ")}
                   </p>
                 </div>
 
@@ -241,8 +244,11 @@ export function UploadWorkspace() {
                     onChange={(event) => setSalesFile(event.target.files?.[0] ?? null)}
                     className="mt-4 block w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-600 file:mr-4 file:rounded-full file:border-0 file:bg-emerald-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-emerald-500"
                   />
-                  <p className="mt-3 text-xs text-slate-500">
-                    Colonnes minimales : {REQUIRED_SALES_COLUMNS.join(", ")}
+                  <p className="mt-3 text-xs leading-5 text-slate-500">
+                    Colonnes minimales acceptées en anglais ou en français :
+                  </p>
+                  <p className="mt-2 text-xs leading-5 text-slate-500">
+                    {SALES_IMPORT_HEADER_HINTS.join(" · ")}
                   </p>
                 </div>
               </div>
@@ -284,14 +290,33 @@ export function UploadWorkspace() {
             <RevealOnScroll delay={90}>
               <section className="panel-card p-6">
                 <h2 className="text-lg font-semibold text-slate-950">
-                  Bonnes pratiques d&apos;import
+                  Scénario de test conseillé
                 </h2>
-                <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
-                  <li>Utilisez une ligne d&apos;en-tête unique et propre.</li>
-                  <li>Gardez les `sku` identiques entre produits et ventes.</li>
-                  <li>Vérifiez que les dates de ventes sont cohérentes.</li>
-                  <li>Évitez les cellules fusionnées dans les fichiers Excel.</li>
-                </ul>
+                <p className="mt-3 text-sm leading-6 text-slate-600">
+                  Pour un test propre, téléchargez les deux fichiers ci-dessous,
+                  importez-les ensemble, puis ouvrez le dashboard et exportez le
+                  CSV ou le rapport HTML.
+                </p>
+                <div className="mt-4 flex flex-col gap-3">
+                  <a
+                    href={TEST_SCENARIO_PRODUCTS_URL}
+                    download
+                    className="rounded-full border border-slate-300 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                  >
+                    Télécharger le fichier produits test
+                  </a>
+                  <a
+                    href={TEST_SCENARIO_SALES_URL}
+                    download
+                    className="rounded-full border border-slate-300 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                  >
+                    Télécharger le fichier ventes test
+                  </a>
+                </div>
+                <p className="mt-3 text-xs leading-5 text-slate-500">
+                  Ces fichiers utilisent des en-têtes en français pour valider le
+                  flux métier complet.
+                </p>
               </section>
             </RevealOnScroll>
 
@@ -304,7 +329,7 @@ export function UploadWorkspace() {
                   <li>KPI clés sur le stock, le chiffre d&apos;affaires et la marge.</li>
                   <li>Graphiques lisibles pour piloter l&apos;activité plus vite.</li>
                   <li>Alertes de stock et suggestions de réassort.</li>
-                  <li>Rapport visuel exportable avec tableaux et graphiques.</li>
+                  <li>Exports plus propres pour Excel et pour le partage d&apos;analyse.</li>
                 </ul>
               </section>
             </RevealOnScroll>

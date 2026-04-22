@@ -10,7 +10,7 @@ async function generateOpenAiSummary(payload: SummaryPayload) {
   }
 
   const prompt = `
-Tu es un assistant métier en français pour un mini SaaS de gestion de stock.
+Tu es un assistant métier en français pour une solution légère de gestion de stock.
 Rédige un court résumé professionnel, clair et actionnable en 5 à 7 phrases.
 Mets en avant :
 - les produits à surveiller

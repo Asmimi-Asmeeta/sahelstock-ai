@@ -1,30 +1,36 @@
 # SahelStock AI
 
-## Résumé
+SahelStock AI est une application web légère de suivi de stock et d'analyse des ventes pour petits marchands. Elle transforme des fichiers tabulaires simples en indicateurs lisibles, alertes de stock, suggestions de réapprovisionnement et résumé métier en français.
 
-**SahelStock AI** est une application web légère de suivi de stock et d'analyse des ventes.
-Elle permet d'importer des fichiers produits et ventes, de visualiser des indicateurs clés, d'identifier les références à surveiller et de générer des recommandations simples en français.
-
-L'application vise un usage sobre, rapide à prendre en main et facile à démontrer.
-
-## Fonctionnalités présentes
+## Ce que fait l'application
 
 - import de fichiers `CSV`, `XLSX` et `XLS`
-- validation des colonnes attendues et contrôles métier supplémentaires
-- stockage local des données importées via `localStorage`
-- tableau de bord avec KPI métier
-- graphiques de ventes et de stock
-- niveaux d'alerte sur le stock
-- prévision simple du mois suivant par produit
-- suggestions de réassort
-- export CSV brut des recommandations
-- export HTML visuel avec KPI, graphiques et tableaux
-- résumé intelligent en français
-- fallback déterministe si `OPENAI_API_KEY` n'est pas configurée
+- validation des colonnes attendues et contrôles de cohérence
+- stockage local du jeu de données importé dans le navigateur
+- tableau de bord avec KPI, graphiques et priorités d'action
+- alertes de stock et prévision simple du mois suivant
+- export CSV des recommandations et export HTML du rapport d'analyse
+- résumé enrichi via `/api/summary` si `OPENAI_API_KEY` est disponible
 
-## Stack technique
+## Périmètre de cette version
 
-- `Next.js 16` avec App Router
+Formats pris en charge :
+
+- `products.csv`, `products.xlsx`, `products.xls`
+- `sales.csv`, `sales.xlsx`, `sales.xls`
+
+Cette version ne couvre pas :
+
+- PDF
+- OCR
+- factures scannées
+- documents texte non structurés
+- authentification
+- base de données serveur
+
+## Stack
+
+- `Next.js 16`
 - `React 19`
 - `TypeScript`
 - `Tailwind CSS 4`
@@ -38,64 +44,77 @@ L'application vise un usage sobre, rapide à prendre en main et facile à démon
 - `Node.js` 20 ou supérieur
 - `npm`
 
-## Installation locale
-
-1. Cloner le dépôt.
-2. Installer les dépendances :
+## Installation
 
 ```bash
 npm install
 ```
 
-3. Créer un fichier `.env.local` à partir de `.env.example` si nécessaire.
-4. Renseigner éventuellement `OPENAI_API_KEY` dans `.env.local`.
-5. Lancer le serveur de développement :
+Créer ensuite un fichier `.env.local` si nécessaire à partir de `.env.example`.
 
-```bash
-npm run dev
-```
-
-6. Ouvrir [http://localhost:3000](http://localhost:3000).
-
-## Commandes npm utiles
-
-```bash
-npm run dev
-npm run lint
-npm run build
-npm run start
-```
-
-- `npm run dev` : démarre l'application en développement
-- `npm run lint` : vérifie la qualité du code
-- `npm run build` : génère le build de production
-- `npm run start` : lance le build en mode production
-
-## Variables d'environnement
-
-Le projet fournit un fichier `.env.example` :
+Exemple :
 
 ```bash
 OPENAI_API_KEY=
 ```
 
-### Variable optionnelle
+La clé OpenAI est optionnelle. Sans cette variable, l'application reste pleinement utilisable avec un résumé local déterministe.
 
-- `OPENAI_API_KEY` : active la génération d'un résumé enrichi via la route serveur `/api/summary`
+## Lancer l'application
 
-Si cette variable est absente, l'application continue de fonctionner avec un résumé local déterministe.
+Développement :
 
-## Formats de fichiers acceptés
+```bash
+npm run dev
+```
+
+Production locale :
+
+```bash
+npm run build
+npm run start
+```
+
+Application disponible par défaut sur [http://localhost:3000](http://localhost:3000).
+
+## Vérifications utiles
+
+```bash
+npm run lint
+npm run build
+```
+
+Ces commandes vérifient respectivement la qualité statique du code et la génération du build de production.
+
+## Jeu de démonstration
+
+Le mode démo charge toujours deux fichiers fixes fournis dans le dépôt :
+
+- `public/demo/products.csv`
+- `public/demo/sales.csv`
+
+Comportement attendu :
+
+- le bouton **Charger une démo** importe ce jeu de données sans aléatoire
+- le tableau de bord affiche un résultat cohérent et stable
+- un import manuel ultérieur remplace le jeu de démonstration dans le navigateur
+
+## Scénario de test recommandé
+
+1. Ouvrir `/upload`
+2. Cliquer sur **Charger une démo**
+3. Vérifier la redirection vers `/dashboard`
+4. Contrôler les KPI, les graphiques et les suggestions de réassort
+5. Tester les exports CSV et HTML
+6. Revenir sur `/upload` et importer ensuite ses propres fichiers pour confirmer le remplacement des données de démonstration
+
+Des fichiers de test supplémentaires sont aussi fournis dans `public/test-scenarios/` avec des en-têtes en français.
+
+## Structure des données attendues
 
 ### Produits
 
-Formats acceptés :
-
-- `products.csv`
-- `products.xlsx`
-- `products.xls`
-
-Colonnes minimales attendues :
+Colonnes minimales :
 
 ```text
 sku, name, category, cost_price, sell_price, current_stock, min_stock, supplier
@@ -107,110 +126,27 @@ Colonne optionnelle :
 unit
 ```
 
-Si `unit` n'est pas fournie, l'application utilise `unité` comme valeur par défaut.
-
-Exemple :
-
-```csv
-sku,name,category,cost_price,sell_price,current_stock,min_stock,supplier,unit
-RIZ25KG,Riz local 25 kg,Epicerie,10800,13500,18,12,Cooperative Niamey,sac
-```
+Si `unit` n'est pas fournie, l'application utilise `unité` par défaut.
 
 ### Ventes
 
-Formats acceptés :
-
-- `sales.csv`
-- `sales.xlsx`
-- `sales.xls`
-
-Colonnes minimales attendues :
+Colonnes minimales :
 
 ```text
 date, sku, units_sold, revenue
 ```
 
-Exemple :
-
-```csv
-date,sku,units_sold,revenue
-2026-05-02,RIZ25KG,10,135000
-```
-
-## Mode démo
-
-Un jeu de données fixe et stable est fourni dans :
-
-- `public/demo/products.csv`
-- `public/demo/sales.csv`
-
-Le bouton **Charger une démo** charge toujours ces fichiers, sans génération aléatoire.
-
-Comportement :
-
-- le jeu de démonstration remplit le tableau de bord avec des résultats prévisibles
-- les données restent enregistrées localement dans le navigateur
-- si l'utilisateur importe ensuite ses propres fichiers, ces nouvelles données remplacent la démo
-
-## Guide d'utilisation rapide
-
-1. Ouvrir la page `/upload`
-2. Charger la démo ou importer un fichier produits et un fichier ventes
-3. Vérifier les éventuels messages d'erreur d'import
-4. Ouvrir le tableau de bord
-5. Consulter les KPI, graphiques, alertes et recommandations
-6. Exporter le CSV brut ou le rapport HTML selon le besoin
-
-## Build de production
-
-Pour générer un build de production :
-
-```bash
-npm run build
-```
-
-Pour lancer l'application en production après le build :
-
-```bash
-npm run start
-```
-
-## Déploiement sur Vercel
-
-Le projet est prêt pour un déploiement sur **Vercel**.
-
-### Procédure recommandée
-
-1. Pousser le dépôt sur GitHub
-2. Importer le dépôt dans Vercel
-3. Laisser Vercel détecter automatiquement la configuration Next.js
-4. Ajouter `OPENAI_API_KEY` dans les variables d'environnement Vercel si souhaité
-5. Déployer
-
-### Points d'attention
+## Notes de déploiement
 
 - aucune base de données n'est requise
 - aucune authentification n'est nécessaire
 - les données importées sont stockées côté navigateur
-- le projet reste donc simple à déployer et à tester
+- l'application peut être déployée simplement sur un hébergement compatible Next.js, par exemple Vercel
 
 ## Limites actuelles
 
-- pas d'authentification
-- pas de base de données
-- pas de synchronisation multi-utilisateur
-- pas d'import de documents non structurés
-- prévision volontairement simple
 - stockage local uniquement
+- pas de synchronisation multi-utilisateur
+- prévision volontairement simple
+- pas de consolidation automatique de plusieurs sources hétérogènes
 
-## À venir
-
-Les prochaines évolutions possibles du produit incluent :
-
-- import de documents commerciaux
-- consolidation de plusieurs sources de données
-- analyse des dépenses et des mouvements de stock
-- lecture de formats plus variés
-- génération d'insights plus avancés
-
-Ces éléments ne sont pas inclus dans la version actuelle.

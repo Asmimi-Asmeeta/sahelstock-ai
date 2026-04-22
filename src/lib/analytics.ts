@@ -122,7 +122,7 @@ function buildProductPerformance(products: Product[], sales: Sale[]) {
       forecastUnits,
     );
 
-    // On ajoute une petite marge de sécurité pour rester crédible sans complexifier.
+    // Petite marge de sécurité pour obtenir une recommandation crédible sans surcharger le modèle.
     const reorderQuantity = Math.max(
       0,
       Math.ceil(product.minStock + forecastUnits * 1.1 - product.currentStock),

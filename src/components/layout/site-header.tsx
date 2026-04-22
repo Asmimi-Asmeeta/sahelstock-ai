@@ -17,7 +17,7 @@ export function SiteHeader() {
             {APP_NAME}
           </Link>
           <p className="text-xs text-slate-500">
-            Stocks, ventes et alertes pour petits marchands.
+            Stocks, ventes et recommandations claires pour petits marchands.
           </p>
         </div>
 

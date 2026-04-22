@@ -20,8 +20,9 @@ export default function Home() {
               </p>
               <p className="mt-6 max-w-2xl text-base leading-7 text-slate-300">
                 Conçu pour les petits marchands du Niger qui vendent via WhatsApp,
-                Facebook ou petite boutique, et qui veulent passer d&apos;un suivi
-                manuel à un pilotage simple, clair et démontrable.
+                Facebook ou en boutique, et qui veulent passer d&apos;un suivi
+                manuel à une lecture claire de leur stock, de leurs ventes et de
+                leurs priorités de réapprovisionnement.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link
@@ -102,7 +103,7 @@ export default function Home() {
                 Fonctionnalités clés
               </span>
               <ul className="mt-5 grid gap-4 text-sm leading-7 text-slate-600">
-                <li>Import des fichiers `products` et `sales` en CSV ou Excel.</li>
+                <li>Import des fichiers produits et ventes en CSV ou Excel.</li>
                 <li>Validation des colonnes avec messages d&apos;erreur clairs.</li>
                 <li>KPI sur le stock, le chiffre d&apos;affaires, la marge et les priorités.</li>
                 <li>Graphiques Recharts pour une lecture rapide des résultats.</li>
@@ -115,21 +116,28 @@ export default function Home() {
           <RevealOnScroll delay={120}>
             <article className="panel-card-accent p-6 sm:p-8">
               <span className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">
-                Tarifs indicatifs
+                Offres
               </span>
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              <div className="mt-5 grid gap-4 lg:grid-cols-3">
                 <div className="panel-card bg-slate-50 p-5">
-                  <h3 className="text-lg font-semibold text-slate-950">Starter</h3>
+                  <h3 className="text-lg font-semibold text-slate-950">Découverte</h3>
                   <p className="mt-2 text-3xl font-bold text-slate-950">0 FCFA</p>
                   <p className="mt-3 text-sm leading-6 text-slate-600">
-                    Import manuel, tableau de bord simple et résumé de base.
+                    Import manuel, lecture des KPI et usage de démonstration.
                   </p>
                 </div>
                 <div className="panel-card border-blue-200 bg-blue-50 p-5">
-                  <h3 className="text-lg font-semibold text-slate-950">Pro</h3>
-                  <p className="mt-2 text-3xl font-bold text-slate-950">4 900 FCFA</p>
+                  <h3 className="text-lg font-semibold text-slate-950">Essentiel</h3>
+                  <p className="mt-2 text-3xl font-bold text-slate-950">2 900 FCFA</p>
                   <p className="mt-3 text-sm leading-6 text-slate-600">
-                    Analyses enrichies et recommandations plus fréquentes.
+                    Tableau de bord complet, alertes de stock et recommandations.
+                  </p>
+                </div>
+                <div className="panel-card border-emerald-200 bg-emerald-50 p-5">
+                  <h3 className="text-lg font-semibold text-slate-950">Pro</h3>
+                  <p className="mt-2 text-3xl font-bold text-slate-950">5 900 FCFA</p>
+                  <p className="mt-3 text-sm leading-6 text-slate-600">
+                    Suivi renforcé, résumés enrichis et appui à la décision plus poussé.
                   </p>
                 </div>
               </div>
@@ -177,7 +185,7 @@ export default function Home() {
               <p className="mt-3 text-sm leading-7 text-slate-600">
                 Les prochaines évolutions pourront inclure l&apos;import de documents
                 commerciaux, la consolidation de plusieurs sources de données, une
-                lecture de formats plus variés et des insights plus avancés.
+                lecture élargie des flux commerciaux et des analyses plus avancées.
               </p>
             </div>
             <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">

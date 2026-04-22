@@ -27,12 +27,100 @@ export type ParsedImport<T> = {
   warnings: string[];
 };
 
-function normalizeHeaders(row: RawRow) {
+const PRODUCT_HEADER_LABELS: Record<string, string> = {
+  sku: "sku / référence",
+  name: "name / nom",
+  category: "category / catégorie",
+  cost_price: "cost_price / prix_achat",
+  sell_price: "sell_price / prix_vente",
+  current_stock: "current_stock / stock_actuel",
+  min_stock: "min_stock / stock_minimum",
+  supplier: "supplier / fournisseur",
+};
+
+const SALES_HEADER_LABELS: Record<string, string> = {
+  date: "date / date_vente",
+  sku: "sku / référence",
+  units_sold: "units_sold / quantité_vendue",
+  revenue: "revenue / chiffre_affaires",
+};
+
+const PRODUCT_HEADER_ALIASES: Record<string, string[]> = {
+  sku: ["sku", "reference", "référence", "ref", "code_produit", "code produit"],
+  name: ["name", "nom", "nom_produit", "nom produit", "produit"],
+  category: ["category", "categorie", "catégorie", "famille"],
+  cost_price: ["cost_price", "prix_achat", "prix achat", "cout_achat", "coût_achat"],
+  sell_price: ["sell_price", "prix_vente", "prix vente", "prix_de_vente"],
+  current_stock: ["current_stock", "stock_actuel", "stock actuel", "stock"],
+  min_stock: ["min_stock", "stock_minimum", "stock minimum", "seuil_minimum"],
+  supplier: ["supplier", "fournisseur"],
+  unit: ["unit", "unite", "unité", "unite_de_mesure", "unité_de_mesure"],
+};
+
+const SALES_HEADER_ALIASES: Record<string, string[]> = {
+  date: ["date", "date_vente", "date vente"],
+  sku: ["sku", "reference", "référence", "ref", "code_produit", "code produit"],
+  units_sold: [
+    "units_sold",
+    "quantite_vendue",
+    "quantité_vendue",
+    "quantite vendue",
+    "quantité vendue",
+    "quantite",
+    "quantité",
+  ],
+  revenue: [
+    "revenue",
+    "revenu",
+    "chiffre_affaires",
+    "chiffre d'affaires",
+    "ca",
+    "montant_vente",
+  ],
+};
+
+function trimRowValues(row: RawRow) {
   return Object.fromEntries(
     Object.entries(row).map(([key, value]) => [
-      key.trim().toLowerCase(),
+      key.trim(),
       typeof value === "string" ? value.trim() : value,
     ]),
+  );
+}
+
+function normalizeHeaderToken(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/['’]/g, "")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+function buildHeaderLookup(aliases: Record<string, string[]>) {
+  const lookup = new Map<string, string>();
+
+  Object.entries(aliases).forEach(([canonicalKey, values]) => {
+    values.forEach((value) => {
+      lookup.set(normalizeHeaderToken(value), canonicalKey);
+    });
+  });
+
+  return lookup;
+}
+
+const productHeaderLookup = buildHeaderLookup(PRODUCT_HEADER_ALIASES);
+const salesHeaderLookup = buildHeaderLookup(SALES_HEADER_ALIASES);
+
+function canonicalizeRows(rows: RawRow[], lookup: Map<string, string>) {
+  return rows.map((row) =>
+    Object.fromEntries(
+      Object.entries(row).map(([key, value]) => [
+        lookup.get(normalizeHeaderToken(key)) ?? normalizeHeaderToken(key),
+        value,
+      ]),
+    ),
   );
 }
 
@@ -70,6 +158,7 @@ function validateRequiredColumns(
   rows: RawRow[],
   requiredColumns: readonly string[],
   label: string,
+  labelsMap: Record<string, string>,
 ) {
   if (rows.length === 0) {
     return [`Le fichier ${label} est vide.`];
@@ -80,7 +169,9 @@ function validateRequiredColumns(
 
   if (missing.length > 0) {
     return [
-      `Le fichier ${label} est invalide. Colonnes manquantes : ${missing.join(", ")}.`,
+      `Le fichier ${label} est invalide. Colonnes manquantes : ${missing
+        .map((column) => labelsMap[column] ?? column)
+        .join(", ")}.`,
     ];
   }
 
@@ -101,7 +192,7 @@ async function readCsvFile(file: File): Promise<ParsedRows> {
   });
 
   return {
-    rows: parsed.data.map(normalizeHeaders).filter((row) => !isBlankRow(row)),
+    rows: parsed.data.map(trimRowValues).filter((row) => !isBlankRow(row)),
     errors,
   };
 }
@@ -122,7 +213,7 @@ async function readSpreadsheetFile(file: File): Promise<ParsedRows> {
   const rows = XLSX.utils.sheet_to_json<RawRow>(sheet, { defval: "" });
 
   return {
-    rows: rows.map(normalizeHeaders).filter((row) => !isBlankRow(row)),
+    rows: rows.map(trimRowValues).filter((row) => !isBlankRow(row)),
     errors: [],
   };
 }
@@ -316,9 +407,15 @@ function validateSaleRow(
 export async function parseProductsFile(file: File): Promise<ParsedImport<Product>> {
   try {
     const source = await readRowsFromFile(file);
+    const rows = canonicalizeRows(source.rows, productHeaderLookup);
     const errors = [
       ...source.errors,
-      ...validateRequiredColumns(source.rows, REQUIRED_PRODUCT_COLUMNS, "produits"),
+      ...validateRequiredColumns(
+        rows,
+        REQUIRED_PRODUCT_COLUMNS,
+        "produits",
+        PRODUCT_HEADER_LABELS,
+      ),
     ];
     const warnings: string[] = [];
 
@@ -333,7 +430,7 @@ export async function parseProductsFile(file: File): Promise<ParsedImport<Produc
     const data: Product[] = [];
     const seenSkus = new Set<string>();
 
-    source.rows.forEach((row, index) => {
+    rows.forEach((row, index) => {
       const lineNumber = index + 2;
       const { product, errors: lineErrors } = validateProductRow(
         row,
@@ -378,9 +475,15 @@ export async function parseProductsFile(file: File): Promise<ParsedImport<Produc
 export async function parseSalesFile(file: File): Promise<ParsedImport<Sale>> {
   try {
     const source = await readRowsFromFile(file);
+    const rows = canonicalizeRows(source.rows, salesHeaderLookup);
     const errors = [
       ...source.errors,
-      ...validateRequiredColumns(source.rows, REQUIRED_SALES_COLUMNS, "ventes"),
+      ...validateRequiredColumns(
+        rows,
+        REQUIRED_SALES_COLUMNS,
+        "ventes",
+        SALES_HEADER_LABELS,
+      ),
     ];
     const warnings: string[] = [];
 
@@ -394,7 +497,7 @@ export async function parseSalesFile(file: File): Promise<ParsedImport<Sale>> {
 
     const data: Sale[] = [];
 
-    source.rows.forEach((row, index) => {
+    rows.forEach((row, index) => {
       const lineNumber = index + 2;
       const { sale, errors: lineErrors } = validateSaleRow(
         row,

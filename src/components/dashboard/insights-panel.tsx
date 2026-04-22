@@ -70,7 +70,7 @@ export function InsightsPanel({
               onClick={exportRecommendations}
               className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
             >
-              CSV brut
+              CSV pour Excel
             </button>
             <button
               type="button"
@@ -87,8 +87,9 @@ export function InsightsPanel({
         </div>
 
         <p className="mt-3 text-xs leading-6 text-slate-500">
-          Le CSV sert aux données brutes de réapprovisionnement. Le rapport HTML
-          génère un livrable plus propre avec KPI, graphiques et tableaux.
+          Le CSV utilise un séparateur point-virgule et l&apos;encodage UTF-8 pour
+          une ouverture plus propre dans Excel. Le rapport HTML sert de livrable
+          visuel pour une démo, un partage interne ou une impression PDF.
         </p>
 
         <div className="mt-6 grid gap-4 md:grid-cols-3">

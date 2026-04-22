@@ -1,0 +1,9 @@
+référence;nom;catégorie;prix_achat;prix_vente;stock_actuel;stock_minimum;fournisseur;unité
+RIZ25KG;Riz local 25 kg;Épicerie;10800;13500;14;12;Coopérative Niamey;sac
+HUILE5L;Huile végétale 5 L;Épicerie;5200;6800;6;10;Huilerie du Sahel;flacon
+SUCRE1KG;Sucre blanc 1 kg;Épicerie;520;700;28;20;Import Niger;sachet
+EAU12;Eau minérale pack de 12;Boisson;1300;1900;9;12;Source Ader;pack
+SAVON250;Savon ménager 250 g;Hygiène;180;300;22;15;Sahel Propreté;pièce
+BOISSON33;Boisson gazeuse 33 cl;Boisson;210;350;11;18;Boissons Niger;bouteille
+LAIT400;Lait en poudre 400 g;Épicerie;1800;2400;9;10;Distributeur Maradi;boîte
+PILEAA;Lot de piles AA x4;Divers;700;1200;4;8;Electro Sahel;blister
