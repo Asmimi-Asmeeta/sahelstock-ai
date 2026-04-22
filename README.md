@@ -141,7 +141,8 @@ date, sku, units_sold, revenue
 - aucune base de données n'est requise
 - aucune authentification n'est nécessaire
 - les données importées sont stockées côté navigateur
-- l'application peut être déployée simplement sur un hébergement compatible Next.js, par exemple Vercel
+- l'application peut être déployée simplement sur un hébergement compatible Next.js, ou sur Vercel.
+NB: déjà déployer sur Vercel (sahelstock-ai.vercel.app)
 
 ## Limites actuelles
 
